@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
 use std::env;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
@@ -13,12 +13,13 @@ mod update;
 /// 3. Network Isolation (by building an iptables firewall inside the container)
 #[derive(Parser, Debug)]
 #[command(name = "rustyolo", version, about, long_about = None)]
+#[command(args_conflicts_with_subcommands = true)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
 
     #[command(flatten)]
-    run_args: RunArgs,
+    run_args: Option<RunArgs>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -39,10 +40,10 @@ enum Commands {
     },
 }
 
-#[derive(Parser, Debug)]
+#[derive(Args, Debug)]
 struct RunArgs {
     /// The agent to run (e.g., 'claude', 'codex', 'gemini-cli').
-    #[arg(index = 1, default_value = "claude")]
+    #[arg(default_value = "claude")]
     agent: String,
 
     /// Additional volumes to mount (e.g., `-v ~/.ssh:/home/agent/.ssh:ro`)
@@ -88,10 +89,21 @@ fn main() {
         }
         None => {
             // Run mode - check for updates first unless skipped
-            if !cli.run_args.skip_version_check {
+            let run_args = cli.run_args.unwrap_or_else(|| RunArgs {
+                agent: "claude".to_string(),
+                volumes: Vec::new(),
+                envs: Vec::new(),
+                allow_domains: None,
+                auth_home: None,
+                image: "llm-rustyolo:latest".to_string(),
+                additional: Vec::new(),
+                skip_version_check: false,
+            });
+
+            if !run_args.skip_version_check {
                 check_for_updates();
             }
-            run_agent(cli.run_args);
+            run_agent(run_args);
         }
     }
 }
