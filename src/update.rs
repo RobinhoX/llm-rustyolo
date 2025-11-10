@@ -32,7 +32,7 @@ pub fn get_latest_version() -> Result<String, Box<dyn Error>> {
     Ok(version)
 }
 
-/// Update the binary using self_update
+/// Update the binary using `self_update`
 pub fn update_binary(skip_confirm: bool) -> Result<self_update::Status, Box<dyn Error>> {
     let current_version = env!("CARGO_PKG_VERSION");
 
@@ -61,10 +61,7 @@ pub fn update_docker_image() -> Result<(), Box<dyn Error>> {
 
     println!("[RustyYOLO] Pulling latest Docker image: {image}");
 
-    let output = Command::new("docker")
-        .arg("pull")
-        .arg(image)
-        .output()?;
+    let output = Command::new("docker").arg("pull").arg(image).output()?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -81,7 +78,7 @@ mod tests {
     use super::*;
 
     #[test]
-    #[ignore] // Ignore by default as it requires network access
+    #[ignore = "requires network access"]
     fn test_get_latest_version() {
         let result = get_latest_version();
         // This will fail until we publish the first release

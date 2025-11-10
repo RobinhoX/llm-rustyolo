@@ -117,10 +117,16 @@ fn handle_update(binary_only: bool, image_only: bool, yes: bool) {
         match update::update_binary(yes) {
             Ok(status) => {
                 if status.updated() {
-                    println!("[RustyYOLO] Binary updated successfully to version {}", status.version());
+                    println!(
+                        "[RustyYOLO] Binary updated successfully to version {}",
+                        status.version()
+                    );
                     println!("[RustyYOLO] Please restart rustyolo to use the new version.");
                 } else {
-                    println!("[RustyYOLO] Binary is already up to date (version {}).", status.version());
+                    println!(
+                        "[RustyYOLO] Binary is already up to date (version {}).",
+                        status.version()
+                    );
                 }
             }
             Err(e) => {
