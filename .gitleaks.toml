@@ -10,10 +10,12 @@ useDefault = true
 [allowlist]
 description = "Allowlisted files and patterns"
 
-# Allow test files with dummy/example secrets
+# Allow test files with dummy/example secrets and documentation files
 paths = [
     '''tests/.*''',
     '''examples/.*''',
+    '''\.secrets\.baseline''',
+    '''SECURITY\.md''',
 ]
 
 # Allow common false positives
