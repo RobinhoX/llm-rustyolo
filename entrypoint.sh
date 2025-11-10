@@ -38,8 +38,9 @@ groupmod -o -g "$AGENT_GID" agent
 usermod -o -u "$AGENT_UID" -g "$AGENT_GID" agent
 
 # Fix permissions on mounted volumes
+# Note: We exclude .git directories to avoid permission issues on macOS
 echo "[RustyYOLO Permissions] Fixing ownership for project directory: /app"
-chown -R "$AGENT_UID:$AGENT_GID" /app
+find /app -not -path '*/.git/*' -not -name '.git' -exec chown "$AGENT_UID:$AGENT_GID" {} + 2>/dev/null || true
 
 # Fix permissions on any persistent auth directories
 PERSISTENT_DIRS=${PERSISTENT_DIRS:-"/home/agent/.config/rustyolo"}
