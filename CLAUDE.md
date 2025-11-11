@@ -110,12 +110,13 @@ rustyolo --skip-version-check claude
 
 If you installed via Homebrew:
 
-**Update the CLI Binary:**
+**Update Docker image (recommended):**
 ```bash
-brew upgrade rustyolo
+rustyolo update
 ```
+This updates the Docker image and shows a reminder about updating the CLI via Homebrew.
 
-**Update the Docker Image:**
+**Update just the Docker image:**
 ```bash
 rustyolo update --image
 ```
@@ -125,7 +126,12 @@ Or manually:
 docker pull ghcr.io/brooksomics/llm-rustyolo:latest
 ```
 
-**Note:** Unlike manual installations, you cannot update both components with a single `rustyolo update` command. Homebrew manages the CLI binary separately, so you need two separate commands (one for CLI via Homebrew, one for Docker image via rustyolo).
+**Update the CLI binary:**
+```bash
+brew upgrade rustyolo
+```
+
+**Note:** The `rustyolo update` command only updates the Docker image for Homebrew installations, as Homebrew manages the CLI binary separately. You'll see a reminder to run `brew upgrade rustyolo` for the CLI.
 
 ### For Manual Installations
 

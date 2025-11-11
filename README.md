@@ -111,19 +111,20 @@ rustyolo claude --help
 
 ### Homebrew Installation
 
-If you installed via Homebrew, use these commands:
+If you installed via Homebrew, you have multiple update options:
 
 ```bash
-# Update the CLI binary
-brew upgrade rustyolo
+# Update Docker image only (shows reminder about CLI)
+rustyolo update
 
-# Update the Docker image
+# Update just the Docker image
 rustyolo update --image
 
-# Note: Unlike manual installations, you cannot update both with a single
-# 'rustyolo update' command. Homebrew manages the CLI binary separately,
-# so you need two separate commands (one for CLI, one for Docker image).
+# Update the CLI binary (must use Homebrew)
+brew upgrade rustyolo
 ```
+
+**Note:** The `rustyolo update` command only updates the Docker image for Homebrew installations, as Homebrew manages the CLI binary separately. You'll see a reminder to run `brew upgrade rustyolo` for the CLI.
 
 ### Manual Installation
 

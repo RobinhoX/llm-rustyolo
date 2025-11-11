@@ -45,12 +45,13 @@ class Rustyolo < Formula
         rustyolo --help
         rustyolo --allow-domains "github.com pypi.org" claude
 
-      Update the CLI:
-        brew upgrade rustyolo
+      Update everything:
+        rustyolo update            # Updates Docker image, reminds about CLI
+        brew upgrade rustyolo      # Updates CLI binary
 
-      Update the Docker image:
-        rustyolo update --image
-        # or: docker pull ghcr.io/brooksomics/llm-rustyolo:latest
+      Or update separately:
+        rustyolo update --image    # Docker image only
+        brew upgrade rustyolo      # CLI binary only
     EOS
   end
 

@@ -58,18 +58,20 @@ docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
 #### Updating
 
 ```bash
-# Update the CLI
-brew upgrade rustyolo
+# Update Docker image (shows reminder about CLI)
+rustyolo update
 
-# Update the Docker image
-docker pull ghcr.io/brooksomics/llm-rustyolo:latest
-
-# Or use the update command
+# Update just the Docker image
 rustyolo update --image
 
-# Note: Unlike manual installations, you cannot update both with a single
-# 'rustyolo update' command. Homebrew manages the CLI separately.
+# Or pull manually
+docker pull ghcr.io/brooksomics/llm-rustyolo:latest
+
+# Update the CLI binary
+brew upgrade rustyolo
 ```
+
+**Note:** The `rustyolo update` command updates the Docker image and reminds you to run `brew upgrade rustyolo` for the CLI binary.
 
 ---
 

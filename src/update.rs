@@ -58,41 +58,28 @@ pub fn detect_installation_method() -> InstallMethod {
 }
 
 /// Update the binary using `self_update`
+/// Note: This function should only be called for manual installations.
+/// Homebrew installations should be handled by the caller (main.rs).
 pub fn update_binary(skip_confirm: bool) -> Result<self_update::Status, Box<dyn Error>> {
-    // Check installation method first
-    match detect_installation_method() {
-        InstallMethod::Homebrew => {
-            eprintln!("[RustyYOLO] ❌ rustyolo was installed via Homebrew.");
-            eprintln!("[RustyYOLO] To update the CLI binary, run:");
-            eprintln!("[RustyYOLO]   brew upgrade rustyolo");
-            eprintln!();
-            eprintln!("[RustyYOLO] To update the Docker image, run:");
-            eprintln!("[RustyYOLO]   rustyolo update --image");
-            std::process::exit(1);
-        }
-        InstallMethod::Manual => {
-            // Continue with self-update for manual installations
-            let current_version = env!("CARGO_PKG_VERSION");
+    let current_version = env!("CARGO_PKG_VERSION");
 
-            if !skip_confirm {
-                println!("[RustyYOLO] Current version: {current_version}");
-                println!("[RustyYOLO] Checking for latest release...");
-            }
-
-            let status = self_update::backends::github::Update::configure()
-                .repo_owner("brooksomics")
-                .repo_name("llm-rustyolo")
-                .bin_name("rustyolo")
-                .show_download_progress(true)
-                .show_output(false)
-                .no_confirm(skip_confirm)
-                .current_version(current_version)
-                .build()?
-                .update()?;
-
-            Ok(status)
-        }
+    if !skip_confirm {
+        println!("[RustyYOLO] Current version: {current_version}");
+        println!("[RustyYOLO] Checking for latest release...");
     }
+
+    let status = self_update::backends::github::Update::configure()
+        .repo_owner("brooksomics")
+        .repo_name("llm-rustyolo")
+        .bin_name("rustyolo")
+        .show_download_progress(true)
+        .show_output(false)
+        .no_confirm(skip_confirm)
+        .current_version(current_version)
+        .build()?
+        .update()?;
+
+    Ok(status)
 }
 
 /// Update the Docker image by pulling the latest version from GitHub Container Registry
