@@ -120,6 +120,7 @@ git push origin v0.2.0
 gh release create v0.2.0 \
   --title "v0.2.0 - Homebrew Distribution Support" \
   --notes "## What's New
+```
 
 - 🍺 Homebrew distribution support
 - 📦 Automated binary builds for macOS and Linux
@@ -128,10 +129,10 @@ gh release create v0.2.0 \
 
 ## Installation via Homebrew
 
-\`\`\`bash
+```bash
 brew tap brooksomics/rustyolo
 brew install rustyolo
-\`\`\`
+```
 
 ## Manual Installation
 
