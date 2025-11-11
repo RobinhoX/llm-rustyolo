@@ -1,10 +1,75 @@
 # Installation Guide
 
-This guide will walk you through installing all the prerequisites and building llm-rustyolo.
+This guide provides detailed installation instructions for llm-rustyolo using either Homebrew (recommended for macOS/Linux) or manual build.
 
-## Prerequisites
+## Installation Options
 
-### 1. Install Rust
+### Option 1: Homebrew Installation (Recommended for macOS/Linux)
+
+This is the easiest method for macOS and Linux users.
+
+#### Prerequisites
+
+1. **Install Homebrew** (if not already installed):
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **Install Docker**:
+   ```bash
+   # macOS
+   brew install --cask docker
+
+   # Linux (or download from https://www.docker.com/products/docker-desktop)
+   curl -fsSL https://get.docker.com -o get-docker.sh
+   sudo sh get-docker.sh
+   ```
+
+#### Install rustyolo
+
+```bash
+# Add the rustyolo tap
+brew tap brooksomics/rustyolo
+
+# Install rustyolo
+brew install rustyolo
+
+# Verify installation
+rustyolo --version
+```
+
+#### Build the Docker Image
+
+```bash
+# Clone the repository to get the Dockerfile
+git clone https://github.com/brooksomics/llm-rustyolo.git
+cd llm-rustyolo
+
+# Build the Docker image
+docker build -t llm-rustyolo:latest .
+```
+
+#### Updating
+
+```bash
+# Update the CLI
+brew upgrade rustyolo
+
+# Update the Docker image
+cd /path/to/llm-rustyolo
+git pull
+docker build -t llm-rustyolo:latest .
+```
+
+---
+
+### Option 2: Manual Build
+
+Use this method if you want to customize the code or if Homebrew is not available.
+
+#### Prerequisites
+
+#### 1. Install Rust
 
 If you don't have Rust installed, install it using rustup:
 
@@ -25,7 +90,7 @@ rustc --version
 cargo --version
 ```
 
-### 2. Install Docker
+#### 2. Install Docker
 
 #### macOS
 
@@ -55,16 +120,16 @@ docker --version
 docker ps
 ```
 
-## Building llm-rustyolo
+#### Building llm-rustyolo
 
-### 1. Clone the Repository
+##### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/brooksomics/llm-rustyolo.git
 cd llm-rustyolo
 ```
 
-### 2. Build the Rust CLI
+##### 2. Build the Rust CLI
 
 ```bash
 # Build in release mode (optimized)
@@ -73,7 +138,7 @@ cargo build --release
 # The binary will be at: target/release/rustyolo
 ```
 
-### 3. Install the Binary (Optional but Recommended)
+##### 3. Install the Binary (Optional but Recommended)
 
 ```bash
 # macOS/Linux
@@ -85,7 +150,7 @@ cp target/release/rustyolo ~/bin/
 # Make sure ~/bin is in your PATH
 ```
 
-### 4. Build the Docker Image
+##### 4. Build the Docker Image
 
 ```bash
 docker build -t llm-rustyolo:latest .

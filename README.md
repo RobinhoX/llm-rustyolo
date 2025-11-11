@@ -27,17 +27,33 @@ This approach combines the flexible auth and volume mounting from deva.sh with t
 ## Quick Setup
 
 ### Prerequisites
-- Rust (install via https://rustup.rs)
-- Docker (Docker Desktop on macOS, or docker.io on Linux)
+- **Homebrew** (for macOS/Linux users) - Install from https://brew.sh
+- **Docker** (Docker Desktop on macOS, or docker.io on Linux)
 
-### Build
+### Installation
+
+#### Option 1: Homebrew (Recommended for macOS/Linux)
 
 ```bash
-# 1. Build the Rust CLI
+# Install via Homebrew tap
+brew tap brooksomics/rustyolo
+brew install rustyolo
+
+# Build the Docker image (first time only)
+docker build -t llm-rustyolo:latest .
+```
+
+#### Option 2: Manual Build (For customization or other platforms)
+
+```bash
+# 1. Install Rust (if not already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# 2. Build the Rust CLI
 cargo build --release
 sudo cp target/release/rustyolo /usr/local/bin/
 
-# 2. Build the Docker image
+# 3. Build the Docker image
 docker build -t llm-rustyolo:latest .
 ```
 
@@ -83,20 +99,37 @@ rustyolo claude --help
 
 ## Keeping Up-to-Date
 
-`rustyolo` includes built-in auto-update functionality:
+### Homebrew Installation
+
+If you installed via Homebrew, use these commands:
 
 ```bash
-# Check for and install updates (both binary and Docker image)
-rustyolo update
+# Update the CLI binary
+brew upgrade rustyolo
 
-# Update just the binary
-rustyolo update --binary
-
-# Update just the Docker image
+# Update the Docker image
 rustyolo update --image
+
+# Note: rustyolo update --binary is disabled for Homebrew installations
+# Always use 'brew upgrade rustyolo' instead
 ```
 
-The tool also checks for updates automatically on startup and will notify you if a new version is available.
+### Manual Installation
+
+If you built from source, use the built-in update commands:
+
+```bash
+# Update the binary
+rustyolo update --binary
+
+# Update the Docker image
+rustyolo update --image
+
+# Update both
+rustyolo update
+```
+
+The tool automatically checks for updates on startup and notifies you when a new version is available.
 
 ## All CLI Options
 

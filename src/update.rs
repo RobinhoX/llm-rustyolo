@@ -1,9 +1,16 @@
 use serde::Deserialize;
+use std::env;
 use std::error::Error;
 use std::process::Command;
 
 const GITHUB_REPO: &str = "brooksomics/llm-rustyolo";
 const GITHUB_API_URL: &str = "https://api.github.com/repos";
+
+#[derive(Debug, PartialEq)]
+pub enum InstallMethod {
+    Homebrew,
+    Manual,
+}
 
 #[derive(Debug, Deserialize)]
 struct GitHubRelease {
@@ -32,27 +39,60 @@ pub fn get_latest_version() -> Result<String, Box<dyn Error>> {
     Ok(version)
 }
 
-/// Update the binary using `self_update`
-pub fn update_binary(skip_confirm: bool) -> Result<self_update::Status, Box<dyn Error>> {
-    let current_version = env!("CARGO_PKG_VERSION");
+/// Detect how rustyolo was installed
+pub fn detect_installation_method() -> InstallMethod {
+    // Get the current executable path
+    if let Ok(exe_path) = env::current_exe() {
+        let path_str = exe_path.to_string_lossy();
 
-    if !skip_confirm {
-        println!("[RustyYOLO] Current version: {current_version}");
-        println!("[RustyYOLO] Checking for latest release...");
+        // Check if binary is in Homebrew Cellar path
+        // Homebrew on Intel Macs: /usr/local/Cellar/rustyolo/
+        // Homebrew on Apple Silicon: /opt/homebrew/Cellar/rustyolo/
+        // Linuxbrew: /home/linuxbrew/.linuxbrew/Cellar/rustyolo/
+        if path_str.contains("/Cellar/rustyolo/") {
+            return InstallMethod::Homebrew;
+        }
     }
 
-    let status = self_update::backends::github::Update::configure()
-        .repo_owner("brooksomics")
-        .repo_name("llm-rustyolo")
-        .bin_name("rustyolo")
-        .show_download_progress(true)
-        .show_output(false)
-        .no_confirm(skip_confirm)
-        .current_version(current_version)
-        .build()?
-        .update()?;
+    InstallMethod::Manual
+}
 
-    Ok(status)
+/// Update the binary using `self_update`
+pub fn update_binary(skip_confirm: bool) -> Result<self_update::Status, Box<dyn Error>> {
+    // Check installation method first
+    match detect_installation_method() {
+        InstallMethod::Homebrew => {
+            eprintln!("[RustyYOLO] ❌ rustyolo was installed via Homebrew.");
+            eprintln!("[RustyYOLO] To update the CLI binary, run:");
+            eprintln!("[RustyYOLO]   brew upgrade rustyolo");
+            eprintln!();
+            eprintln!("[RustyYOLO] To update the Docker image, run:");
+            eprintln!("[RustyYOLO]   rustyolo update --image");
+            std::process::exit(1);
+        }
+        InstallMethod::Manual => {
+            // Continue with self-update for manual installations
+            let current_version = env!("CARGO_PKG_VERSION");
+
+            if !skip_confirm {
+                println!("[RustyYOLO] Current version: {current_version}");
+                println!("[RustyYOLO] Checking for latest release...");
+            }
+
+            let status = self_update::backends::github::Update::configure()
+                .repo_owner("brooksomics")
+                .repo_name("llm-rustyolo")
+                .bin_name("rustyolo")
+                .show_download_progress(true)
+                .show_output(false)
+                .no_confirm(skip_confirm)
+                .current_version(current_version)
+                .build()?
+                .update()?;
+
+            Ok(status)
+        }
+    }
 }
 
 /// Update the Docker image by pulling the latest version
@@ -92,5 +132,17 @@ mod tests {
                 println!("Expected error (no releases yet): {e}");
             }
         }
+    }
+
+    #[test]
+    fn test_detect_installation_method() {
+        // This test will pass in both environments
+        // When run locally (manual install), it should return Manual
+        // When run via Homebrew, it should return Homebrew
+        let method = detect_installation_method();
+        assert!(
+            method == InstallMethod::Manual || method == InstallMethod::Homebrew,
+            "Installation method should be either Manual or Homebrew"
+        );
     }
 }
