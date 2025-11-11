@@ -30,15 +30,22 @@ This approach combines the flexible auth and volume mounting from deva.sh with t
 - Rust (install via https://rustup.rs)
 - Docker (Docker Desktop on macOS, or docker.io on Linux)
 
-### Build
+### Installation
 
 ```bash
-# 1. Build the Rust CLI
+# 1. Build and install the Rust CLI
 cargo build --release
 sudo cp target/release/rustyolo /usr/local/bin/
 
-# 2. Build the Docker image
-docker build -t llm-rustyolo:latest .
+# 2. Pull the Docker image from GitHub Container Registry
+docker pull ghcr.io/brooksomics/llm-rustyolo:latest
+```
+
+The Docker image is automatically published to GitHub Container Registry on each release. You can also build it locally if you need to customize it:
+
+```bash
+# Optional: Build the Docker image locally
+docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
 ```
 
 For detailed installation instructions, see [INSTALL.md](./INSTALL.md).
@@ -138,7 +145,7 @@ Options:
 
   --image <IMAGE>
           The Docker image to use
-          [default: llm-rustyolo:latest]
+          [default: ghcr.io/brooksomics/llm-rustyolo:latest]
 
   --skip-version-check
           Skip automatic version check on startup

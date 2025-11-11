@@ -50,22 +50,32 @@ cargo build --release
 cp target/release/rustyolo /usr/local/bin/
 ```
 
-### 2. Build the Docker Image
+### 2. Get the Docker Image
+
+The Docker image is automatically published to GitHub Container Registry. Simply pull the latest version:
 
 ```bash
-docker build -t llm-rustyolo:latest .
+docker pull ghcr.io/brooksomics/llm-rustyolo:latest
 ```
 
-This will:
-- Start from the official Node.js image
-- Install iptables, dnsutils, and gosu
-- Install Claude Code (and other agents as they become available)
-- Create a non-root `agent` user
-- Copy the entrypoint script
+The image includes:
+- Official Node.js base image
+- iptables, dnsutils, and gosu
+- Claude Code (and other agents as they become available)
+- A non-root `agent` user
+- The security entrypoint script
+
+**Optional: Build Locally**
+
+If you need to customize the image, you can build it locally:
+
+```bash
+docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
+```
 
 ## Updating
 
-`rustyolo` includes built-in auto-update functionality for the CLI binary. The Docker image is self-hosted and requires manual rebuilding.
+`rustyolo` includes built-in auto-update functionality for both the CLI binary and the Docker image.
 
 ### Automatic Update Checks
 
@@ -99,15 +109,23 @@ Or use `rustyolo update --yes` to skip the confirmation prompt.
 
 ### Updating the Docker Image
 
-**Important:** The Docker image is self-hosted and not published to a registry. When a new version is released, you must rebuild the image locally:
+The Docker image is automatically published to GitHub Container Registry. You can update it using:
+
+```bash
+rustyolo update --image
+```
+
+This will pull the latest version from `ghcr.io/brooksomics/llm-rustyolo:latest`.
+
+**Optional: Build Locally**
+
+If you've customized the image or prefer to build locally, you can rebuild it after pulling the latest code:
 
 ```bash
 cd /path/to/llm-rustyolo
 git pull
-docker build -t llm-rustyolo:latest .
+docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
 ```
-
-**Note:** The `rustyolo update --image` command will not work for self-hosted setups. Always rebuild the image manually after updating the repository.
 
 ### Manual Update Process (Without Auto-Update)
 
@@ -123,7 +141,11 @@ cp target/release/rustyolo /usr/local/bin/
 
 **2. Update the Docker Image:**
 ```bash
-docker build -t llm-rustyolo:latest .
+# Pull from registry
+docker pull ghcr.io/brooksomics/llm-rustyolo:latest
+
+# Or build locally if you've customized it
+docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
 ```
 
 ## Usage
@@ -233,7 +255,7 @@ Options:
 
   --image <IMAGE>
           The Docker image to use
-          [default: llm-rustyolo:latest]
+          [default: ghcr.io/brooksomics/llm-rustyolo:latest]
 
   --skip-version-check
           Skip version check on startup
@@ -371,7 +393,7 @@ if args.agent == "your-agent" {
 
 3. Rebuild the Docker image:
 ```bash
-docker build -t llm-rustyolo:latest .
+docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
 ```
 
 ### Custom Network Rules
@@ -434,7 +456,7 @@ Example target names:
 
 The `self_update` crate will automatically detect and download the appropriate binary for the user's platform.
 
-**Note:** The Docker image is self-hosted. Users must rebuild it locally using `docker build -t llm-rustyolo:latest .` after pulling updates from the repository.
+**Note:** The Docker image is automatically published to GitHub Container Registry (`ghcr.io/brooksomics/llm-rustyolo`) via GitHub Actions on each release. Users can update it using `rustyolo update --image` or `docker pull ghcr.io/brooksomics/llm-rustyolo:latest`.
 
 ## Acknowledgments
 
