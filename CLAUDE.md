@@ -1,10 +1,10 @@
 # llm-rustyolo
 
-A secure, firewalled wrapper for running AI agents (like Claude Code) in "YOLO mode" with comprehensive multi-layered security protection.
+A secure, firewalled wrapper for running AI agents (like Claude Code) in "YOLO mode" with complete protection through defense-in-depth security.
 
 ## What is this?
 
-This project provides a Rust-based CLI wrapper that runs AI coding agents inside a hardened Docker container with four layers of security:
+This project provides a Rust-based CLI wrapper that runs AI coding agents inside a hardened Docker container with **four layers of security**:
 
 1. **Filesystem Isolation**: The agent only sees your project directory and explicitly mounted volumes (like read-only `~/.ssh`). It cannot access your host filesystem.
 
@@ -12,9 +12,9 @@ This project provides a Rust-based CLI wrapper that runs AI coding agents inside
 
 3. **Network Isolation**: A dynamic iptables firewall is built at startup, blocking all outbound network traffic except for DNS and a whitelist of trusted domains you provide.
 
-4. **Syscall Isolation**: Dangerous system calls are blocked via seccomp (secure computing mode), preventing operations like kernel module loading, process debugging, and system reboots.
+4. **Syscall Isolation**: A seccomp (secure computing) profile blocks dangerous system calls like `ptrace`, `mount`, kernel module loading, and other privilege escalation vectors at the kernel level.
 
-This allows you to safely run agents with permission-skipping flags (like `--dangerously-skip-permissions`) without worrying about data exfiltration, filesystem damage, network abuse, or kernel-level exploits.
+This allows you to safely run agents with permission-skipping flags (like `--dangerously-skip-permissions`) without worrying about data exfiltration, filesystem damage, network abuse, or privilege escalation.
 
 ## Architecture
 
@@ -324,6 +324,11 @@ Options:
           Use 'none' to disable the default sandbox message.
           Default: Informs the agent about sandbox limitations.
 
+  --seccomp-profile <SECCOMP_PROFILE>
+          Path to a custom seccomp profile, or 'none' to disable seccomp.
+          If not specified, uses the embedded conservative default profile.
+          Example: --seccomp-profile ./seccomp/seccomp-restrictive.json
+
   --skip-version-check
           Skip version check on startup
 
@@ -391,6 +396,51 @@ This means:
 - Even if the agent is compromised, it cannot exfiltrate data to arbitrary servers
 - DNS resolution still works, but connections are blocked unless whitelisted
 
+### 4. Syscall Isolation (Seccomp)
+
+The Rust CLI:
+- Embeds a conservative seccomp (secure computing) profile at compile time
+- Applies the profile to the container via `--security-opt seccomp=...`
+- Allows users to provide custom profiles via `--seccomp-profile`
+
+The seccomp profile:
+- Sets the default action to `SCMP_ACT_ERRNO` (deny by default)
+- Allows only the syscalls needed for Claude Code to function (file I/O, networking, process management, etc.)
+- **Blocks dangerous syscalls** including:
+  - `ptrace` - Process debugging/inspection
+  - `mount` / `umount` - Filesystem manipulation
+  - `init_module` / `delete_module` - Kernel module loading
+  - `reboot` / `kexec_load` - System reboot
+  - `bpf` - Loading eBPF programs
+  - `keyctl` - Kernel keyring manipulation
+  - `perf_event_open` - Performance monitoring (info leak)
+  - Many others (see [seccomp/README.md](seccomp/README.md) for the full list)
+
+This means:
+- Even if the agent is compromised, it cannot use dangerous syscalls
+- Privilege escalation attacks are blocked at the kernel level
+- Process inspection and debugging are prevented
+- The attack surface is drastically reduced
+
+**Custom Seccomp Profiles:**
+
+Use the default conservative profile (recommended):
+```bash
+rustyolo claude  # Default seccomp is automatically applied
+```
+
+Use the restrictive profile for maximum security:
+```bash
+rustyolo --seccomp-profile ./seccomp/seccomp-restrictive.json claude
+```
+
+Disable seccomp (for debugging only, **not recommended**):
+```bash
+rustyolo --seccomp-profile none claude
+```
+
+See [seccomp/README.md](seccomp/README.md) for detailed documentation on seccomp profiles, including how to create custom profiles.
+
 ## Security Considerations
 
 ### What This Protects Against
@@ -398,6 +448,9 @@ This means:
 - **Data Exfiltration**: The network firewall prevents the agent from sending your code/data to untrusted servers
 - **Filesystem Access**: The agent cannot read sensitive files like `~/.aws/credentials` unless you explicitly mount them
 - **Privilege Escalation**: The agent runs as a non-root user and cannot gain elevated privileges
+- **Syscall-Based Attacks**: Seccomp blocks dangerous system calls like `ptrace`, kernel module loading, and mount operations
+- **Container Escape Attempts**: Multiple layers of isolation make container escape extremely difficult
+- **Process Inspection**: The agent cannot use `ptrace` or similar syscalls to inspect other processes
 
 ### What This Does NOT Protect Against
 
