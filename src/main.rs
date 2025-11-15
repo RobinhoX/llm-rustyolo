@@ -195,12 +195,10 @@ fn check_for_updates() {
     // Silently ignore errors in version checking to not disrupt normal usage
 }
 
-fn run_agent(args: RunArgs) {
-    let mut docker_cmd = Command::new("docker");
-    docker_cmd.arg("run").arg("-it").arg("--rm");
-
-    // --- 4. Syscall Isolation (Seccomp) ---
-    let _seccomp_temp_file = match args.seccomp_profile.as_deref() {
+/// Sets up seccomp syscall filtering for the Docker container.
+/// Returns an optional `PathBuf` to keep the temp file alive if using the embedded profile.
+fn setup_seccomp(docker_cmd: &mut Command, seccomp_profile: Option<&str>) -> Option<PathBuf> {
+    match seccomp_profile {
         Some("none") => {
             // User explicitly disabled seccomp
             println!("[RustyYOLO] ⚠️  Seccomp disabled - syscall filtering is OFF");
@@ -211,10 +209,10 @@ fn run_agent(args: RunArgs) {
             // User provided a custom profile path
             let profile_path = PathBuf::from(custom_path);
             if !profile_path.exists() {
-                eprintln!("[RustyYOLO] ❌ Seccomp profile not found: {}", custom_path);
+                eprintln!("[RustyYOLO] ❌ Seccomp profile not found: {custom_path}");
                 std::process::exit(1);
             }
-            println!("[RustyYOLO] Using custom seccomp profile: {}", custom_path);
+            println!("[RustyYOLO] Using custom seccomp profile: {custom_path}");
             docker_cmd
                 .arg("--security-opt")
                 .arg(format!("seccomp={}", profile_path.display()));
@@ -238,7 +236,15 @@ fn run_agent(args: RunArgs) {
             // Return the temp file so it doesn't get deleted until the function ends
             Some(temp_profile_path)
         }
-    };
+    }
+}
+
+fn run_agent(args: RunArgs) {
+    let mut docker_cmd = Command::new("docker");
+    docker_cmd.arg("run").arg("-it").arg("--rm");
+
+    // --- 4. Syscall Isolation (Seccomp) ---
+    let _seccomp_temp_file = setup_seccomp(&mut docker_cmd, args.seccomp_profile.as_deref());
 
     // --- 3. Network Isolation ---
     docker_cmd.arg("--cap-add=NET_ADMIN");
