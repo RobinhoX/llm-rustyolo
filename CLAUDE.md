@@ -231,6 +231,32 @@ rustyolo claude
 
 If you provide arguments, `rustyolo` won't add the default `--dangerously-skip-permissions` flag.
 
+### Customizing the Sandbox Message
+
+By default, `rustyolo` injects a system prompt into Claude to inform it about the sandbox environment. This helps Claude understand its limitations and ask for permission when needed.
+
+**Default behavior** (message is automatically injected):
+```bash
+rustyolo claude
+```
+
+The default message explains:
+- Filesystem isolation (only project directory and mounted volumes are accessible)
+- Privilege isolation (running as non-root with limited permissions)
+- Network isolation (blocked traffic except DNS and whitelisted domains)
+
+**Custom message**:
+```bash
+rustyolo --inject-message "You are in a restricted environment. Ask before attempting network operations." claude
+```
+
+**Disable the sandbox message**:
+```bash
+rustyolo --inject-message none claude
+```
+
+This feature uses Claude Code's `--append-system-prompt` flag to inject the message into the system prompt, ensuring Claude is aware of the sandbox constraints throughout the session.
+
 ### Environment Variables
 
 You can set trusted domains via environment variable:
@@ -289,6 +315,11 @@ Options:
   --image <IMAGE>
           The Docker image to use
           [default: llm-rustyolo:latest]
+
+  --inject-message <MESSAGE>
+          Custom message to inject into the agent's system prompt.
+          Use 'none' to disable the default sandbox message.
+          Default: Informs the agent about sandbox limitations.
 
   --skip-version-check
           Skip version check on startup

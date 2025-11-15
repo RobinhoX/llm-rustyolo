@@ -78,6 +78,12 @@ struct RunArgs {
     /// Skip version check on startup
     #[arg(long)]
     skip_version_check: bool,
+
+    /// Custom message to inject into the agent's system prompt.
+    /// Use 'none' to disable the default sandbox message.
+    /// Default: Informs the agent about sandbox limitations.
+    #[arg(long = "inject-message")]
+    inject_message: Option<String>,
 }
 
 fn main() {
@@ -98,6 +104,7 @@ fn main() {
                 image: "ghcr.io/brooksomics/llm-rustyolo:latest".to_string(),
                 additional: Vec::new(),
                 skip_version_check: false,
+                inject_message: None,
             });
 
             if !run_args.skip_version_check {
@@ -264,16 +271,45 @@ fn run_agent(args: RunArgs) {
 
     // Add the agent command
     docker_cmd.arg(&args.agent); // Always add agent name
+
+    // Prepare system prompt injection
+    let default_sandbox_message = "You are operating within a sandboxed Docker environment with restricted access. \
+        The sandbox enforces three layers of security: (1) Filesystem isolation - you can only access the mounted \
+        project directory and explicitly mounted volumes; (2) Privilege isolation - you are running as a non-root \
+        user with limited permissions; (3) Network isolation - outbound traffic is blocked except for DNS and \
+        explicitly whitelisted domains. If you need additional permissions, filesystem access, or network access \
+        to complete a task, please ask the operator to adjust the sandbox configuration.";
+
+    let inject_message = match &args.inject_message {
+        Some(msg) if msg.to_lowercase() == "none" => None, // User explicitly disabled
+        Some(msg) => Some(msg.as_str()),                   // User provided custom message
+        None => Some(default_sandbox_message),             // Use default
+    };
+
     if args.additional.is_empty() {
         // If no args are given, assume default "YOLO" mode
         if args.agent == "claude" {
             docker_cmd.arg("--dangerously-skip-permissions");
+
+            // Inject system prompt for Claude
+            if let Some(message) = inject_message {
+                docker_cmd.arg("--append-system-prompt");
+                docker_cmd.arg(message);
+            }
         }
         // Add default "danger" flags for other agents here as they become available
         // e.g., aider, cursor, etc.
     } else {
         // Pass user's explicit args (e.g., "claude --help")
         docker_cmd.args(args.additional);
+
+        // Still inject system prompt even with custom args (if agent is claude)
+        if args.agent == "claude" {
+            if let Some(message) = inject_message {
+                docker_cmd.arg("--append-system-prompt");
+                docker_cmd.arg(message);
+            }
+        }
     }
 
     // --- Run the Command ---
