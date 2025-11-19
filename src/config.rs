@@ -158,20 +158,11 @@ inject_message = "You are in a restricted environment"
         let config: Config = toml::from_str(toml_str).unwrap();
 
         // Test default section
-        assert_eq!(
-            config.default.allow_domains,
-            Some("github.com pypi.org".to_string())
-        );
+        assert_eq!(config.default.allow_domains, Some("github.com pypi.org".to_string()));
         assert_eq!(config.default.volumes.as_ref().unwrap().len(), 2);
         assert_eq!(config.default.env.as_ref().unwrap().len(), 2);
-        assert_eq!(
-            config.default.auth_home,
-            Some(PathBuf::from("~/.config/rustyolo"))
-        );
-        assert_eq!(
-            config.default.image,
-            Some("my-custom-image:latest".to_string())
-        );
+        assert_eq!(config.default.auth_home, Some(PathBuf::from("~/.config/rustyolo")));
+        assert_eq!(config.default.image, Some("my-custom-image:latest".to_string()));
         assert_eq!(config.default.agent, Some("claude".to_string()));
 
         // Test resources section
@@ -180,14 +171,8 @@ inject_message = "You are in a restricted environment"
         assert_eq!(config.resources.pids_limit, Some("512".to_string()));
 
         // Test security section
-        assert_eq!(
-            config.security.seccomp_profile,
-            Some("./seccomp/custom.json".to_string())
-        );
-        assert_eq!(
-            config.security.dns_servers,
-            Some("8.8.8.8 1.1.1.1".to_string())
-        );
+        assert_eq!(config.security.seccomp_profile, Some("./seccomp/custom.json".to_string()));
+        assert_eq!(config.security.dns_servers, Some("8.8.8.8 1.1.1.1".to_string()));
         assert_eq!(config.security.audit_log, Some("verbose".to_string()));
         assert_eq!(
             config.security.inject_message,
@@ -203,10 +188,7 @@ allow_domains = "github.com"
 "#;
 
         let config: Config = toml::from_str(toml_str).unwrap();
-        assert_eq!(
-            config.default.allow_domains,
-            Some("github.com".to_string())
-        );
+        assert_eq!(config.default.allow_domains, Some("github.com".to_string()));
         assert!(config.default.volumes.is_none());
         assert!(config.resources.memory.is_none());
     }
@@ -227,9 +209,6 @@ unknown_field = "value"
 
         let result: Result<Config, _> = toml::from_str(toml_str);
         assert!(result.is_err());
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("unknown field `unknown_field`"));
+        assert!(result.unwrap_err().to_string().contains("unknown field `unknown_field`"));
     }
 }
