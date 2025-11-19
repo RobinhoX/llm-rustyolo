@@ -67,7 +67,7 @@ docker pull ghcr.io/brooksomics/llm-rustyolo:latest
 docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
 ```
 
-For detailed installation instructions, see [INSTALL.md](./INSTALL.md).
+For detailed installation instructions, see [docs/guides/installation.md](./docs/guides/installation.md).
 
 ## Usage
 
@@ -106,6 +106,37 @@ You can pass any command and arguments after the agent name. `rustyolo` is smart
 ```bash
 rustyolo claude --help
 ```
+
+## Configuration Files
+
+Tired of typing long commands? Create a `.rustyolo.toml` file in your project directory:
+
+```toml
+[default]
+allow_domains = "github.com pypi.org npmjs.org"
+volumes = ["~/.ssh:/home/agent/.ssh:ro", "~/.gitconfig:/home/agent/.gitconfig:ro"]
+auth_home = "~/.config/rustyolo"
+
+[resources]
+memory = "8g"
+cpus = "6"
+
+[security]
+audit_log = "basic"
+```
+
+Then just run:
+```bash
+rustyolo claude
+```
+
+**Features:**
+- ✅ Automatic loading from current directory
+- ✅ CLI arguments override config file settings
+- ✅ Gitignored by default (project-specific settings)
+- ✅ Full validation with helpful error messages
+
+See [docs/guides/configuration.md](./docs/guides/configuration.md) for detailed configuration guide and examples.
 
 ## Keeping Up-to-Date
 
@@ -197,9 +228,12 @@ Options:
 
 ## Documentation
 
-- [INSTALL.md](./INSTALL.md) - Detailed installation instructions
+- [docs/guides/installation.md](./docs/guides/installation.md) - Detailed installation instructions
+- [docs/guides/configuration.md](./docs/guides/configuration.md) - Configuration file guide
 - [CLAUDE.md](./CLAUDE.md) - Complete documentation on how it works, security considerations, and advanced usage
-- [SECURITY.md](./SECURITY.md) - Secret scanning and security protection setup
+- [docs/security/security-policy.md](./docs/security/security-policy.md) - Secret scanning and security protection setup
+- [docs/security/seccomp.md](./docs/security/seccomp.md) - Seccomp profiles and syscall filtering
+- [docs/](./docs/) - Full documentation index
 
 ## Security
 
@@ -209,7 +243,7 @@ This repository implements multiple layers of secret detection to prevent accide
 - **GitHub Actions** - Automated secret scanning on every push and PR
 - **git-secrets** - Additional local protection with custom patterns
 
-See [SECURITY.md](./SECURITY.md) for complete setup instructions and best practices.
+See [docs/security/security-policy.md](./docs/security/security-policy.md) for complete setup instructions and best practices.
 
 ## License
 
@@ -217,4 +251,4 @@ MIT License
 
 ## Contributing
 
-Contributions welcome! Please open an issue or PR.
+Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
