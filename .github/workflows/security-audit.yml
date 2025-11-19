@@ -36,7 +36,9 @@ jobs:
         run: cargo install cargo-audit --locked
 
       - name: Run cargo audit
-        run: cargo audit --deny warnings
+        # Only fail on actual vulnerabilities, not warnings (unmaintained, etc.)
+        # Unmaintained crates are handled by cargo-deny in deny.toml
+        run: cargo audit
 
   cargo-deny:
     name: Cargo Deny (License & Security Check)
