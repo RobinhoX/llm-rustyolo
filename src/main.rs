@@ -724,9 +724,12 @@ fn run_agent(args: RunArgs) {
     let _seccomp_temp_file = setup_seccomp(&mut docker_cmd, args.seccomp_profile.as_deref());
 
     // --- 3. Network Isolation ---
-    // Drop all capabilities and only add NET_ADMIN (needed for iptables)
+    // Drop all capabilities and only add necessary ones:
+    // - NET_ADMIN: needed for iptables firewall setup
+    // - CHOWN: needed to fix file ownership in entrypoint.sh
     docker_cmd.arg("--cap-drop=ALL");
     docker_cmd.arg("--cap-add=NET_ADMIN");
+    docker_cmd.arg("--cap-add=CHOWN");
 
     // Prevent privilege escalation via setuid/setgid binaries
     docker_cmd.arg("--security-opt").arg("no-new-privileges");

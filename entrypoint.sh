@@ -86,7 +86,9 @@ AGENT_GID=${AGENT_GID:-9001}
 echo "[RustyYOLO Permissions] Syncing user 'agent' to UID=$AGENT_UID, GID=$AGENT_GID"
 # This is the robust method from deva.sh
 groupmod -o -g "$AGENT_GID" agent
-usermod -o -u "$AGENT_UID" -g "$AGENT_GID" agent
+# Note: usermod may fail to change home directory ownership due to --cap-drop=ALL,
+# but we manually fix permissions below, so suppress this error
+usermod -o -u "$AGENT_UID" -g "$AGENT_GID" agent 2>/dev/null || true
 
 # Fix permissions on mounted volumes
 # Note: We exclude .git directories to avoid permission issues on macOS
