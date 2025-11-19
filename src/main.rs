@@ -727,9 +727,12 @@ fn run_agent(args: RunArgs) {
     // Drop all capabilities and only add necessary ones:
     // - NET_ADMIN: needed for iptables firewall setup
     // - CHOWN: needed to fix file ownership in entrypoint.sh
+    // - SETUID/SETGID: needed for gosu to switch from root to agent user
     docker_cmd.arg("--cap-drop=ALL");
     docker_cmd.arg("--cap-add=NET_ADMIN");
     docker_cmd.arg("--cap-add=CHOWN");
+    docker_cmd.arg("--cap-add=SETUID");
+    docker_cmd.arg("--cap-add=SETGID");
 
     // Prevent privilege escalation via setuid/setgid binaries
     docker_cmd.arg("--security-opt").arg("no-new-privileges");
