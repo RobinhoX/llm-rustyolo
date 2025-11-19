@@ -5,6 +5,102 @@ All notable changes to rustyolo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2025-11-19
+
+### Added
+- **Configuration file support** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - `.rustyolo.toml` for project-level configuration
+  - CLI arguments override config file values
+  - Support for default settings, resource limits, and security options
+  - `.rustyolo.toml.example` with comprehensive examples
+  - `docs/guides/configuration.md` guide
+- **Dry-run mode** with `--dry-run` flag ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Preview Docker commands before execution
+  - Verify configuration without running containers
+  - Useful for debugging and CI/CD pipelines
+- **Comprehensive test suite** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - 15 unit tests for volume validation
+  - 2 unit tests for seccomp profile setup
+  - 4 unit tests for configuration file parsing
+  - Total of 21 unit tests
+- **Automated dependency management** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Dependabot configuration for Cargo, GitHub Actions, and Docker
+  - Automatic weekly security updates
+  - Grouped updates for better PR management
+- **Security audit CI workflows** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - `cargo-audit` for dependency vulnerability scanning
+  - `cargo-deny` for license compliance and security policies
+  - Weekly automated scans on schedule
+  - Runs on all PRs and pushes to main
+- **Contributing guidelines** in `CONTRIBUTING.md` ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Development setup instructions
+  - Code style requirements
+  - Pull request process
+  - Security reporting guidelines
+- **License declaration** in `Cargo.toml` ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - MIT license properly declared for cargo-deny compliance
+
+### Changed
+- **Documentation reorganization** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Moved 15 documentation files into structured `docs/` hierarchy
+  - New structure: `docs/guides/`, `docs/security/`, `docs/development/`
+  - Created `docs/README.md` index for easy navigation
+  - Cleaner repository root directory
+  - Updated all cross-references
+- **Enhanced security hardening** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - `--cap-drop=ALL` to remove all Linux capabilities by default
+  - `--cap-add=NET_ADMIN` for iptables firewall management (required)
+  - `--cap-add=CHOWN` for container permission fixing (required)
+  - `--cap-add=SETUID` for gosu user switching (required)
+  - `--cap-add=SETGID` for gosu group switching (required)
+  - `--security-opt no-new-privileges` to prevent privilege escalation
+  - Surgical capability model: deny by default, allow only what's necessary
+- **Improved security audit configuration** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Created `deny.toml` with version 2 format
+  - Explicit license allowlist (MIT, Apache-2.0, BSD-3-Clause, Unicode-3.0, etc.)
+  - Advisory ignore list for documented exceptions
+  - Fail on actual vulnerabilities, warn on unmaintained transitive deps
+- **Code organization and quality** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Extracted magic strings to named constants
+  - Added comprehensive doc comments to security functions
+  - Created `src/config.rs` module for configuration logic
+  - Improved code formatting and linting compliance
+
+### Fixed
+- **Container usermod permission failure** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Added `--cap-add=CHOWN` to allow usermod to change ownership
+  - Made usermod command resilient to capability restrictions with `2>/dev/null || true`
+  - Ensures permissions are correctly set even if usermod partially fails
+- **Container user switching failure** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Added `--cap-add=SETUID` and `--cap-add=SETGID` for gosu
+  - Fixes "operation not permitted" error when dropping privileges
+  - Ensures agent runs as non-root user successfully
+- **CI cargo-deny configuration errors** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Migrated `deny.toml` to version 2 format
+  - Fixed deprecated field errors (unlicensed, copyleft, vulnerability)
+  - Proper Unicode-3.0 license handling for ICU crates
+  - Ignored RUSTSEC-2025-0119 (number_prefix unmaintained) with documentation
+- **CI cargo-audit false positives** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Removed `--deny warnings` flag from cargo-audit
+  - Now only fails on actual security vulnerabilities
+  - Unmaintained crate warnings handled by cargo-deny policy
+- **Missing license declaration** ([#PR](https://github.com/brooksomics/llm-rustyolo/pull/PR))
+  - Added `license = "MIT"` to Cargo.toml
+  - Resolves cargo-deny unlicensed error
+
+### Security
+- **Defense-in-depth strengthened**: Surgical Linux capability management
+- **Privilege escalation prevention**: `no-new-privileges` security option
+- **Automated security monitoring**: cargo-audit and cargo-deny in CI
+- **Dependency updates**: Dependabot for automatic security patches
+- **License compliance**: Explicit license allowlist with cargo-deny
+
+### Documentation
+- Comprehensive configuration guide with 5 example configs
+- Contributing guidelines for open source collaboration
+- Improved documentation discoverability via hierarchical organization
+- Clear security model documentation with capability explanations
+
 ## [0.4.0] - 2025-11-16
 
 ### Added
@@ -145,6 +241,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[0.5.0]: https://github.com/brooksomics/llm-rustyolo/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/brooksomics/llm-rustyolo/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/brooksomics/llm-rustyolo/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/brooksomics/llm-rustyolo/compare/v0.2.0...v0.3.0
