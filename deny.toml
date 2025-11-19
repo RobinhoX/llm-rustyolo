@@ -11,10 +11,12 @@ allow = [
     "MIT",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
-    "BSD-2-Clause",
     "BSD-3-Clause",
-    "ISC",
-    "Unicode-3.0",  # Required by ICU crates (icu_collections, etc.) via reqwest
+    "Unicode-3.0",  # Required by ICU crates via reqwest
+    "Unicode-DFS-2016",  # Unicode Data Files and Software License
+    "CC0-1.0",  # Public domain
+    "Zlib",  # Zlib license
+    "MPL-2.0",  # Mozilla Public License 2.0
 ]
 
 # Configuration for crates that should be ignored
